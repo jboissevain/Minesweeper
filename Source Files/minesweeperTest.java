@@ -8,7 +8,7 @@ public class minesweeperTest {
 	public static void main(String[] args) {
         
         //create new minesweeper instance 2 rows by 5 columns
-	minesweeper game = new minesweeper(2, 5);
+	minesweeper game = new minesweeper(9, 9);
 
         //display mines
         System.out.println( game.toStringMines() );

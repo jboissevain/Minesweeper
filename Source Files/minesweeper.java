@@ -9,9 +9,11 @@
  *           and extended Board characters<br>
  * <p>
  * minesweeper.java<br>
- * spring 2004<br>
- *<br>
+ * 5/10/2019
+ * Modified and completed by Jeremy Boissevain
  */
+
+import javafx.util.Pair;
 public class minesweeper {
 
 	/** mine and clue values, 9 - mine, 0-8 clue values
@@ -138,7 +140,7 @@ public class minesweeper {
 	}
 
 	/** tiles array as String
-		 * @return mines array as a String
+		 * @return tiles array as a String
 		 */
 	public String toStringTiles() {
 		String result = "\n";
@@ -223,7 +225,11 @@ public class minesweeper {
 	/** Sets all tiles to 1 - closed
 	 */
 	private void resetTiles() {
-		//		add your code here
+		for(int i = 0; i < tiles.length; i++) {
+			for(int j = 0; j < tiles[i].length; j++) {
+				tiles[i][j] = 1;
+			}
+		}
 	}
 
 	/** places mines randomly on grid
@@ -232,18 +238,60 @@ public class minesweeper {
 	 * minimum number of mines = 1<br>
 	 */
 	private void placeMines() {
-		//		add your code here
+		int numMines = Math.max((1+(getCols() * getRows())) / 10, 1);
+		for(int i = 0; i < numMines; i++) {
+			//get a random tile coordinate
+			Pair<Integer, Integer> rand = getRandomMine();
+			//keep getting random tile coords until you hit one that isn't already a mine
+			while(getMines(rand.getKey(), rand.getValue()) == 9) {
+				rand = getRandomMine();
+			}
+			//make that tile a mine
+			mines[rand.getKey()][rand.getValue()] = 9;
+		}
 	}
-
+	
+	/** calculates a random tile coordinate using Math.random 
+	 * @return a Pair of Integers in row, column order
+	 */
+	private Pair<Integer, Integer> getRandomMine() {
+		return new Pair<Integer, Integer>((int)(Math.random() * getRows()),(int)(Math.random() * getCols()));
+		
+	}
+	
 	/** calculates clue values and updates
 	 * clue values in mines array<br>
 	 * integer value 9 represents a mine<br>
 	 * clue values will be 0 ... 8<br>
 	 */
 	private void calculateClues() {
-		//		add your code here
+		for(int i = 0; i < tiles.length; i++) {
+			for(int j = 0; j < tiles[i].length; j++) {
+				int mineVal = mines[i][j];
+				if(mineVal == 9) {
+					continue;
+				} else {
+					mineVal = checkForMines(i,j);
+				}
+				mines[i][j] = mineVal;
+			}
+		}
 	}
-
+	
+	/** checks the number of mines adjacent to this tile
+	 * @return the number of mines adjacent to this tile
+	 */
+	private int checkForMines(int r, int c) {
+		int count = 0;
+		for(int i = r - 1; i <= r + 1; i++)
+			for(int j = c - 1; j <= c + 1; j++) {
+				if(validIndex(i,j) && getMines(i,j) == 9) {
+					count++;
+				}
+			}
+		return count;
+	}
+	
 	/** determines if x,y is valid position
 	 * @param x row index
 	 * @param y column index
@@ -251,9 +299,8 @@ public class minesweeper {
 	 * false if not valid board position
 	 */
 	private boolean validIndex(int x, int y) {
-		//add your code here
-
-		return true; //this line must be modified
+		boolean isValid = ((x >= 0 && x < getRows()) && (y >= 0 && y < getCols()));
+		return isValid;
 	}
 
 	/** Level 2 - game won status
@@ -264,5 +311,4 @@ public class minesweeper {
 		//add your code here
 		return false; //this line must be modified
 	}
-
 }
